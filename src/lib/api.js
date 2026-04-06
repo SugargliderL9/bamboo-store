@@ -1,3 +1,6 @@
+import { supabase } from './supabase'
+
+// 🔥 Helper para hacer requests
 async function request(path, options = {}) {
   const res = await fetch(path, {
     ...options,
@@ -23,38 +26,63 @@ async function request(path, options = {}) {
   return data
 }
 
-export async function listProducts() {
-  const data = await request('/api/products')
-  return data.products // 👈 👈 👈 ESTA ES LA CLAVE
+// 🔐 Obtener headers con token de Supabase
+async function getAuthHeaders() {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  const token = session?.access_token
+
+  return token
+    ? { Authorization: `Bearer ${token}` }
+    : {}
 }
 
+// 📦 LISTAR PRODUCTOS
+export async function listProducts() {
+  const data = await request('/api/products')
+  return data.products
+}
+
+// 🔍 OBTENER UNO
 export async function getProduct(id) {
   const data = await request(`/api/products/${encodeURIComponent(id)}`)
   return data.product
 }
 
-export async function createProduct(product, adminToken) {
+// ➕ CREAR PRODUCTO
+export async function createProduct(product) {
+  const headers = await getAuthHeaders()
+
   const data = await request('/api/products', {
     method: 'POST',
     body: JSON.stringify(product),
-    headers: adminToken ? { Authorization: `Bearer ${adminToken}` } : {},
+    headers,
   })
+
   return data.product
 }
 
-export async function updateProduct(id, product, adminToken) {
+// ✏️ ACTUALIZAR PRODUCTO
+export async function updateProduct(id, product) {
+  const headers = await getAuthHeaders()
+
   const data = await request(`/api/products/${encodeURIComponent(id)}`, {
     method: 'PUT',
     body: JSON.stringify(product),
-    headers: adminToken ? { Authorization: `Bearer ${adminToken}` } : {},
+    headers,
   })
+
   return data.product
 }
 
-export async function deleteProduct(id, adminToken) {
+// 🗑️ ELIMINAR PRODUCTO
+export async function deleteProduct(id) {
+  const headers = await getAuthHeaders()
+
   await request(`/api/products/${encodeURIComponent(id)}`, {
     method: 'DELETE',
-    headers: adminToken ? { Authorization: `Bearer ${adminToken}` } : {},
+    headers,
   })
 }
-
