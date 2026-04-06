@@ -44,7 +44,24 @@ button {
     border: none;
     letter-spacing: inherit;
 }
-
+.nav-btn {
+    text-decoration: none;
+    color: white;
+    border: 1px solid white;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-weight: 500;
+    display: inline-block;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+  
+    &:hover {
+      background: white;
+      color: black;
+    }
+  }
 @import './Home.scss';
 @import './Navbar.scss';
 @import './Menu.scss';
