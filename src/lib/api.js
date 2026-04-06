@@ -1,6 +1,6 @@
 import { supabase } from './supabase'
 
-// 🔥 Helper para hacer requests
+// 🔥 Helper para hacer requests (FIXED)
 async function request(path, options = {}) {
   const res = await fetch(path, {
     ...options,
@@ -12,15 +12,20 @@ async function request(path, options = {}) {
 
   if (res.status === 204) return null
 
-  const text = await res.text()
-  const data = text ? JSON.parse(text) : null
+  let data = null
+
+  try {
+    data = await res.json() // 🔥 aquí está el fix
+  } catch (err) {
+    console.error('Response no es JSON:', err)
+  }
 
   if (!res.ok) {
     const message = data?.error || `request_failed_${res.status}`
-    const err = new Error(message)
-    err.status = res.status
-    err.data = data
-    throw err
+    const error = new Error(message)
+    error.status = res.status
+    error.data = data
+    throw error
   }
 
   return data
