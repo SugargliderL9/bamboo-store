@@ -4,7 +4,7 @@ const { requireAuth } = require('../_lib/auth')
 module.exports = async (req, res) => {
   try {
     if (req.method === 'GET') {
-      const products = await listProducts()
+      const products = await listProducts(req) // 👈 PASAR req
       res.statusCode = 200
       res.setHeader('Content-Type', 'application/json')
       res.end(JSON.stringify({ products }))
@@ -13,13 +13,16 @@ module.exports = async (req, res) => {
 
     if (req.method === 'POST') {
       if (!requireAuth(req, res)) return
-      const created = await createProduct(req.body)
+
+      const created = await createProduct(req, req.body) // 👈 PASAR req
+
       if (!created.ok) {
         res.statusCode = 400
         res.setHeader('Content-Type', 'application/json')
         res.end(JSON.stringify({ error: created.error }))
         return
       }
+
       res.statusCode = 201
       res.setHeader('Content-Type', 'application/json')
       res.end(JSON.stringify({ product: created.value }))
@@ -35,4 +38,3 @@ module.exports = async (req, res) => {
     res.end(JSON.stringify({ error: 'internal_error' }))
   }
 }
-
