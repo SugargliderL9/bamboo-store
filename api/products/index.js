@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
       const { data, error } = await supabase
         .from('products')
         .insert([
-          { name, price, image_url: imageUrl, description }
+          { name, price,imageUrl, description }
         ])
         .select()
 
