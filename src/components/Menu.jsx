@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
+import { useQuoteCart } from '../context/QuoteCartContext' // 🔥
 
 const baseLinks = [
   { id: 1, name: 'Inicio', path: '/' },
@@ -10,13 +11,21 @@ const baseLinks = [
 
 const Menu = ({ isOpen, setIsOpen }) => {
   const { user, loading } = useAuth()
+  const { items } = useQuoteCart() // 🔥 carrito
 
   const isAdmin = user?.email === 'bamboocuuwp@gmail.com'
 
-  // 🔥 construir links dinámicamente
+  // 🔥 links dinámicos
   const links = isAdmin
-    ? [...baseLinks, { id: 5, name: 'Owner', path: '/owner/productos' }]
-    : baseLinks
+    ? [
+        ...baseLinks,
+        { id: 5, name: 'Cotización 🛒', path: '/cotizacion' }, // 🔥 NUEVO
+        { id: 6, name: 'Owner', path: '/owner/productos' }
+      ]
+    : [
+        ...baseLinks,
+        { id: 5, name: 'Cotización 🛒', path: '/cotizacion' } // 🔥 NUEVO
+      ]
 
   if (loading) return null
 
@@ -30,7 +39,10 @@ const Menu = ({ isOpen, setIsOpen }) => {
             to={link.path} 
             onClick={() => setIsOpen(false)}
           >
-            {link.name}
+            {/* 🔥 contador */}
+            {link.name === 'Cotización 🛒'
+              ? `Carrito (${items.length})`
+              : link.name}
           </Link>
         ))}
       </div>

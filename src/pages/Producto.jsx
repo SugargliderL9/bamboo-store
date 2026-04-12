@@ -4,12 +4,17 @@ import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import "../style/Producto.scss"
 import { getProduct } from "../lib/api";
+import { useQuoteCart } from "../context/QuoteCartContext";
+import { motion, AnimatePresence } from "framer-motion"
 
 const Producto = () => {
   const { id } = useParams()
   const [product, setProduct] = useState(null)
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState('')
+  const [showToast, setShowToast] = useState(false)
+
+  const { addToCart } = useQuoteCart()
 
   useEffect(() => {
     let mounted = true
@@ -42,20 +47,48 @@ const Producto = () => {
       <img src={product.imageUrl} alt={product.name} />
       <h1>{product.name}</h1>
 
-      {/* 🔥 PRECIOS BONITOS */}
+      {/* 💰 PRECIOS */}
       <div className="prices">
-  <div className="price-options">
-    <p>Menudeo: ${product.price_menudeo?.toLocaleString()}</p>
-    <p>Mayoreo: ${product.price_mayoreo?.toLocaleString()}</p>
-    <p>Distribuidor: ${product.price_distribuidor?.toLocaleString()}</p>
-  </div>
-</div>
+        <div className="price-options">
+          <p>Menudeo: ${product.price_menudeo?.toLocaleString()}</p>
+          <p>Mayoreo: ${product.price_mayoreo?.toLocaleString()}</p>
+          <p>Distribuidor: ${product.price_distribuidor?.toLocaleString()}</p>
+        </div>
+      </div>
 
       <p className="description">{product.description}</p>
 
-      <Link to="/catalogo" className="back-button">
-        Volver al Catálogo
-      </Link>
+      {/* 🔥 BOTONES */}
+      <div className="actions">
+        <button
+          className="btn-primary"
+          onClick={() => {
+            addToCart(product)
+            setShowToast(true)
+            setTimeout(() => setShowToast(false), 1500)
+          }}
+        >
+          Agregar a cotización
+        </button>
+
+        <Link to="/catalogo" className="btn-secondary">
+          Volver al Catálogo
+        </Link>
+      </div>
+
+      {/* ✨ TOAST */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            className="toast"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+          >
+            ✅ Producto agregado
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

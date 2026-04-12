@@ -93,3 +93,111 @@
     }
   }
 }
+.add-button {
+  margin-top: 20px;
+  padding: 12px 20px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.add-button:hover {
+  background: #333;
+  transform: scale(1.05);
+}
+.actions {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+/* BOTÓN PRINCIPAL */
+.btn-primary {
+  width: 240px;
+  padding: 12px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #333;
+  transform: scale(1.05);
+}
+
+/* BOTÓN SECUNDARIO */
+.btn-secondary {
+  width: 240px;
+  padding: 12px;
+  background: #ffb5d1;
+  color: #111;
+  text-align: center;
+  border-radius: 10px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: #ff9ac2;
+  transform: scale(1.05);
+}
+.actions {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-primary {
+  width: 240px;
+  padding: 12px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #333;
+  transform: scale(1.05);
+}
+
+.btn-secondary {
+  width: 240px;
+  padding: 12px;
+  background: #ffb5d1;
+  color: #111;
+  text-align: center;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: #ff9ac2;
+  transform: scale(1.05);
+}
+
+.toast {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  background: #111;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  box-shadow: 0px 5px 20px rgba(0,0,0,0.3);
+}

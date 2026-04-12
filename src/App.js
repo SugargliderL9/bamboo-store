@@ -10,7 +10,7 @@ import Navbar from './components/Navbar'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
 import './style/Global.scss'
-
+import Cotizacion from "./pages/Cotizacion"
 const App = () => {
   return (
     <>
@@ -23,6 +23,7 @@ const App = () => {
         <Route path="/ubicacion" element={<Ubicacion />} />
         <Route path="/nosotros" element={<Nosotros />} />
         <Route path="/owner/productos"element={<ProtectedRoute> <OwnerProductos /> </ProtectedRoute>}/>
+        <Route path="/cotizacion" element={<Cotizacion />} />
       </Routes>
     </>
   )
