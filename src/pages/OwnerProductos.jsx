@@ -6,13 +6,22 @@ import {
   updateProduct as apiUpdateProduct,
 } from '../lib/api'
 
-const EMPTY_FORM = { name: '', imageUrl: '', price: '', description: '' }
+const EMPTY_FORM = {
+  name: '',
+  imageUrl: '',
+  priceMenudeo: '',
+  priceMayoreo: '',
+  priceDistribuidor: '',
+  description: '',
+}
 
 function toForm(product) {
   return {
     name: product?.name ?? '',
     imageUrl: product?.imageUrl ?? '',
-    price: product?.price ?? '',
+    priceMenudeo: product?.price_menudeo ?? '',
+    priceMayoreo: product?.price_mayoreo ?? '',
+    priceDistribuidor: product?.price_distribuidor ?? '',
     description: product?.description ?? '',
   }
 }
@@ -21,13 +30,14 @@ function toPayload(form) {
   return {
     name: String(form.name || '').trim(),
     imageUrl: String(form.imageUrl || '').trim(),
-    price: Number(form.price),
+    priceMenudeo: Number(form.priceMenudeo),
+    priceMayoreo: Number(form.priceMayoreo),
+    priceDistribuidor: Number(form.priceDistribuidor),
     description: String(form.description || '').trim(),
   }
 }
 
 const OwnerProductos = () => {
-  const [adminToken, setAdminToken] = useState(() => localStorage.getItem('ADMIN_TOKEN') || '')
   const [products, setProducts] = useState([])
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState('')
@@ -54,26 +64,30 @@ const OwnerProductos = () => {
     refresh()
   }, [])
 
-  useEffect(() => {
-    localStorage.setItem('ADMIN_TOKEN', adminToken)
-  }, [adminToken])
-
   const canSubmit = useMemo(() => {
     const payload = toPayload(form)
-    return payload.name && payload.imageUrl && Number.isFinite(payload.price) && payload.price >= 0
+    return (
+      payload.name &&
+      payload.imageUrl &&
+      Number.isFinite(payload.priceMenudeo) &&
+      payload.priceMenudeo >= 0
+    )
   }, [form])
 
   async function onSubmit(e) {
     e.preventDefault()
     setSaving(true)
     setError('')
+
     try {
       const payload = toPayload(form)
+
       if (mode === 'create') {
-        await apiCreateProduct(payload, adminToken)
+        await apiCreateProduct(payload)
       } else {
-        await apiUpdateProduct(editingId, payload, adminToken)
+        await apiUpdateProduct(editingId, payload)
       }
+
       setForm(EMPTY_FORM)
       setMode('create')
       setEditingId(null)
@@ -103,7 +117,7 @@ const OwnerProductos = () => {
     setSaving(true)
     setError('')
     try {
-      await apiDeleteProduct(id, adminToken)
+      await apiDeleteProduct(id)
       await refresh()
     } catch (e) {
       setError(e?.message || 'error')
@@ -133,14 +147,14 @@ const OwnerProductos = () => {
       )
 
       const data = await res.json()
-      console.log(data)
+
       setForm((f) => ({
         ...f,
         imageUrl: data.secure_url,
       }))
 
       setError('')
-    } catch (err) {
+    } catch {
       setError('Error subiendo imagen')
     } finally {
       setSaving(false)
@@ -152,29 +166,22 @@ const OwnerProductos = () => {
       <h1>Owner · Productos</h1>
 
       <div className="owner-grid">
+        {/* FORM */}
         <section className="panel">
           <h2>{mode === 'create' ? 'Agregar producto' : `Editar producto #${editingId}`}</h2>
 
-          <label className="field">
-            <span>Admin token</span>
-            <input
-              value={adminToken}
-              onChange={(e) => setAdminToken(e.target.value)}
-              placeholder="ADMIN_TOKEN"
-            />
-          </label>
-
           <form onSubmit={onSubmit} className="form">
+
+            {/* NOMBRE */}
             <label className="field">
               <span>Nombre</span>
               <input
                 value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                placeholder="Ej. Cartera"
+                onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}
               />
             </label>
 
-            {/* 🔥 CLOUDINARY */}
+            {/* IMAGEN */}
             <label className="field">
               <span>Imagen</span>
               <input type="file" accept="image/*" onChange={handleImageUpload} />
@@ -188,21 +195,38 @@ const OwnerProductos = () => {
               )}
             </label>
 
+            {/* PRECIOS */}
             <label className="field">
-              <span>Precio</span>
+              <span>Precios</span>
+
               <input
-                value={form.price}
-                onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
-                placeholder="$$$"
+                type="number"
+                placeholder="Menudeo"
+                value={form.priceMenudeo}
+                onChange={(e) => setForm(f => ({ ...f, priceMenudeo: e.target.value }))}
+              />
+
+              <input
+                type="number"
+                placeholder="Mayoreo"
+                value={form.priceMayoreo}
+                onChange={(e) => setForm(f => ({ ...f, priceMayoreo: e.target.value }))}
+              />
+
+              <input
+                type="number"
+                placeholder="Distribuidor"
+                value={form.priceDistribuidor}
+                onChange={(e) => setForm(f => ({ ...f, priceDistribuidor: e.target.value }))}
               />
             </label>
 
+            {/* DESCRIPCIÓN */}
             <label className="field">
               <span>Descripción</span>
               <textarea
                 value={form.description}
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                rows={4}
+                onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
               />
             </label>
 
@@ -210,7 +234,7 @@ const OwnerProductos = () => {
 
             <div className="actions">
               <button type="submit" disabled={!canSubmit || saving}>
-                {saving ? 'Guardando…' : mode === 'create' ? 'Agregar' : 'Guardar cambios'}
+                {saving ? 'Guardando…' : mode === 'create' ? 'Agregar' : 'Guardar'}
               </button>
 
               {mode === 'edit' && (
@@ -226,6 +250,7 @@ const OwnerProductos = () => {
           </form>
         </section>
 
+        {/* LISTADO */}
         <section className="panel">
           <h2>Listado</h2>
 
@@ -237,7 +262,12 @@ const OwnerProductos = () => {
               <div key={p.id} className="row">
                 <img src={p.imageUrl} alt={p.name} style={{ width: '60px' }} />
                 <div>{p.name}</div>
-                <div>${p.price}</div>
+
+                <div>
+                  <small>M: ${p.price_menudeo}</small><br />
+                  <small>May: ${p.price_mayoreo}</small><br />
+                  <small>Dist: ${p.price_distribuidor}</small>
+                </div>
 
                 <button onClick={() => startEdit(p)}>Editar</button>
                 <button onClick={() => remove(p.id)}>Eliminar</button>

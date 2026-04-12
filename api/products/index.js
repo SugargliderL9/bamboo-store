@@ -13,25 +13,55 @@ module.exports = async (req, res) => {
 
       res.statusCode = 200
       res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ products: data }))
-      return
+      return res.end(JSON.stringify({ products: data }))
     }
 
     // 🔹 POST
     if (req.method === 'POST') {
-      if (!requireAuth(req, res)) return
+      // ✅ Asegurar await por si es async
+      if (!(await requireAuth(req, res))) return
 
-      const body =
-        typeof req.body === 'string'
+      // ✅ Parse seguro del body
+      let body
+      try {
+        body = typeof req.body === 'string'
           ? JSON.parse(req.body)
           : req.body
+      } catch {
+        res.statusCode = 400
+        res.setHeader('Content-Type', 'application/json')
+        return res.end(JSON.stringify({ error: 'Invalid JSON' }))
+      }
 
-      const { name, price, imageUrl, description } = body
+      const {
+        name,
+        imageUrl,
+        description,
+        priceMenudeo,
+        priceMayoreo,
+        priceDistribuidor
+      } = body || {}
+
+      // ✅ Validación básica
+      if (!name || !priceMenudeo) {
+        res.statusCode = 400
+        res.setHeader('Content-Type', 'application/json')
+        return res.end(JSON.stringify({
+          error: 'Missing required fields (name, priceMenudeo)'
+        }))
+      }
 
       const { data, error } = await supabase
         .from('products')
         .insert([
-          { name, price,imageUrl, description }
+          {
+            name,
+            imageUrl,
+            description,
+            price_menudeo: priceMenudeo,
+            price_mayoreo: priceMayoreo,
+            price_distribuidor: priceDistribuidor,
+          }
         ])
         .select()
 
@@ -39,18 +69,23 @@ module.exports = async (req, res) => {
 
       res.statusCode = 201
       res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ product: data[0] }))
-      return
+      return res.end(JSON.stringify({
+        product: data?.[0] || null
+      }))
     }
 
+    // 🔹 Método no permitido
     res.statusCode = 405
-    res.end('Method Not Allowed')
+    res.setHeader('Allow', ['GET', 'POST'])
+    return res.end('Method Not Allowed')
 
   } catch (err) {
     console.error(err)
 
     res.statusCode = 500
     res.setHeader('Content-Type', 'application/json')
-    res.end(JSON.stringify({ error: err.message }))
+    return res.end(JSON.stringify({
+      error: err.message || 'Internal Server Error'
+    }))
   }
 }

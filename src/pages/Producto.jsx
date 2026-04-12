@@ -41,7 +41,16 @@ const Producto = () => {
     <div className="producto-page">
       <img src={product.imageUrl} alt={product.name} />
       <h1>{product.name}</h1>
-      <p className="price">${product.price}</p>
+
+      {/* 🔥 PRECIOS BONITOS */}
+      <div className="prices">
+  <div className="price-options">
+    <p>Menudeo: ${product.price_menudeo?.toLocaleString()}</p>
+    <p>Mayoreo: ${product.price_mayoreo?.toLocaleString()}</p>
+    <p>Distribuidor: ${product.price_distribuidor?.toLocaleString()}</p>
+  </div>
+</div>
+
       <p className="description">{product.description}</p>
 
       <Link to="/catalogo" className="back-button">

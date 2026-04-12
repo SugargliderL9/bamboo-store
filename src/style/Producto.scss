@@ -67,3 +67,29 @@
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+.prices {
+  margin: 20px 0;
+  text-align: center;
+
+ 
+  .price-options {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    p {
+      background: #111;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: 0.3s ease;
+    }
+
+    p:hover {
+      background: #333;
+      transform: scale(1.05);
+    }
+  }
+}
